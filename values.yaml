@@ -1,0 +1,27 @@
+replicaCount: 1
+namespace: docling
+
+image:
+  registry: ghcr.io
+  repository: docling-project/docling-serve-cpu
+  tag: "latest"
+  pullPolicy: IfNotPresent
+  # Overrides the image tag whose default is the chart appVersion.
+resources:
+  requests:
+    cpu: "250m"
+    memory: "256Mi"
+  limits:
+    cpu: "1"
+    memory: "2Gi"
+
+service:
+  name: docling-service
+  type: ClusterIP
+  port: 5001
+  targetPort: 5001
+
+env:
+  DOCLING_SERVE_ENABLE_UI: "true"
+  DOCLING_SERVE_OTEL_ENABLE_PROMETHEUS: "true"
+  DOCLING_SERVE_ENG_LOC_NUM_WORKERS: "2"

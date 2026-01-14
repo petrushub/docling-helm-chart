@@ -1,0 +1,9 @@
+apiVersion: v2
+name: docling-chart
+description: A Helm chart for Kubernetes to deploy docling
+type: application
+version: 0.1.0
+appVersion: "1.0.0"
+icon: https://docling-project.github.io/docling/assets/logo.png
+maintainers:
+- name: Pedro Pérez

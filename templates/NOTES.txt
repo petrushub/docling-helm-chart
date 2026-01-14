@@ -1,0 +1,48 @@
+🚀 Thank you for installing {{ .Chart.Name }} 🎉
+
+ℹ️ Release Information
+----------------------
+Release Name: {{ .Release.Name }}
+Namespace:    {{ .Values.namespace }}
+Chart Version: {{ .Chart.Version }}
+App Version:   {{ .Chart.AppVersion }}
+
+✅ Status
+--------
+Check the status of your release:
+  helm status {{ .Release.Name }} -n {{ .Values.namespace }}
+
+View all rendered Kubernetes resources:
+  helm get all {{ .Release.Name }} -n {{ .Values.namespace }}
+
+
+
+🆙 Upgrade / Configuration
+--------------------------
+To update configuration values:
+  helm upgrade {{ .Release.Name }} {{ .Chart.Name }} \
+    -n {{ .Values.namespace }} \
+    -f values.yaml
+
+To scale replicas:
+  helm upgrade {{ .Release.Name }} {{ .Chart.Name }} \
+    -n {{ .Values.namespace }} \
+    --set replicaCount=1
+
+♟ Logs & Troubleshooting
+------------------------
+View pod logs:
+  kubectl logs -l app={{ .Release.Name }} -n {{ .Values.namespace }}
+
+Describe resources:
+  kubectl get all -n {{ .Values.namespace }}
+
+🧹 Cleanup
+---------
+To uninstall the release:
+  helm uninstall {{ .Release.Name }} -n {{ .Values.namespace }}
+
+📝 Notes:
+-------
+If the namespace is stuck in `Terminating`, Helm operations will fail.
+Ensure the namespace is in `Active` state before upgrades or reinstalls.
