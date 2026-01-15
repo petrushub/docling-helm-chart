@@ -45,4 +45,4 @@ jobs:
       - name: 🚀 Helm Deploy
         if: ${{ success() }}
         run: |
-          helm upgrade --install ${{ env.APP_NAME }} . --create-namespace --namespace ${{ env.APP_NAME }}
+          helm upgrade --install --atomic ${{ env.APP_NAME }} . --create-namespace --namespace ${{ env.APP_NAME }}
