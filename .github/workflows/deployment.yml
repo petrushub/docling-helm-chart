@@ -1,0 +1,47 @@
+name: "🧗‍♀️ Deploy Docling Helm Chart"
+
+on:
+  workflow_dispatch:
+  # push:
+  #   branches:
+  #     - main
+    paths-ignore:
+      - '.github/**'
+      - '**.md' 
+
+env:
+  APP_NAME: docling
+
+permissions:
+  contents: read
+
+jobs:
+  setup-and-get:
+    runs-on: ubuntu-latest
+    steps:
+    
+      - name: 💾 Checkout repository
+        uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd #v5.0.1
+
+      - name: ⚙️ Set up kubectl
+        uses: azure/setup-kubectl@776406bce94f63e41d621b960d78ee25c8b76ede #v4.0.1
+        with:
+          version: v1.33.0
+
+      - uses: azure/setup-helm@v1a275c3b69536ee54be43f2070a358922e12c8d4 #v4.3.1
+        with:
+          version: '3.11.3'      
+
+      - name: 👩🏼‍💻 Configure kubeconfig
+        run: |
+          mkdir -p $HOME/.kube
+          echo "${{ secrets.KUBECONFIG }}" > $HOME/.kube/config
+          chmod 600 $HOME/.kube/config
+
+      - name: ✅ Verify cluster connectivity
+        run: kubectl cluster-info
+
+      - name: Helm Deploy
+        if: ${{ success() }}
+        run: |
+          helm upgrade --install ${{ env.APP_NAME }} . --create-namespace --namespace ${{ env.APP_NAME }}
