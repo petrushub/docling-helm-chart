@@ -2,21 +2,24 @@ name: "🧗‍♀️ Deploy Docling Helm Chart"
 
 on:
   workflow_dispatch:
-  # push:
-  #   branches:
-  #     - main
     paths-ignore:
       - '.github/**'
       - '**.md' 
 
-env:
-  APP_NAME: docling
 
-permissions:
+permissions: # https://graphite.com/guides/github-actions-permissions
   contents: read
 
+concurrency: # https://docs.github.com/en/actions/how-tos/write-workflows/choose-when-workflows-run/control-workflow-concurrency
+  group: deploy-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  APP_NAME: docling
+  NAMESPACE: docling
+
 jobs:
-  setup-and-helm:
+  setup-and-helming:
     runs-on: ubuntu-latest
     steps:
     
@@ -33,16 +36,21 @@ jobs:
         with:
           version: '3.11.3'      
 
-      - name: 👩🏼‍💻 Configure kubeconfig
+      - name: ⚙️ Configure kubeconfig
         run: |
-          mkdir -p $HOME/.kube
-          echo "${{ secrets.KUBECONFIG }}" > $HOME/.kube/config
-          chmod 600 $HOME/.kube/config
+          mkdir -p "${HOME}/.kube"
+          printf "%s" "${KUBECONFIG}" > "${HOME}/.kube/config"
+          chmod 600 "${HOME}/.kube/config"
+        env:
+          KUBECONFIG: ${{ secrets.KUBECONFIG }}
 
       - name: ✅ Verify cluster connectivity
         run: kubectl cluster-info
 
-      - name: 🚀 Helm Deploy
-        if: ${{ success() }}
+      - name: 🔨 Helming ...
         run: |
-          helm upgrade --install --atomic ${{ env.APP_NAME }} . --create-namespace --namespace ${{ env.APP_NAME }}
+          helm upgrade --install ${{ env.APP_NAME }} . \ 
+          --namespace ${{ env.NAMESPACE }} --create-namespace \
+          --atomic \
+          --wait \
+          --timeout 5m \
